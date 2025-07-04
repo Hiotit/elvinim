@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kutu Açma Animasyonu - Gelişmiş</title>
+<style>
+  body {
+    background: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    flex-direction: column;
+  }
+
+  .box {
+    position: relative;
+    width: 250px;
+    height: 180px;
+    background: linear-gradient(145deg, #3a6ea5, #2a557d);
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.7);
+    overflow: visible;
+    filter: drop-shadow(0 0 6px #50a1ff);
+  }
+
+  .lid {
+    position: absolute;
+    width: 260px;
+    height: 60px;
+    background: linear-gradient(145deg, #5690d3, #3a6ea5);
+    border-radius: 15px 15px 0 0;
+    top: -60px;
+    left: -5px;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+    transform-origin: bottom center;
+    transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    filter: drop-shadow(0 0 5px #80b3ff);
+  }
+
+  .lid.open {
+    transform: rotateX(-120deg);
+  }
+
+  .message {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffd93b;
+    font-weight: 900;
+    font-size: 20px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    user-select: none;
+    text-shadow:
+      0 0 7px #ffd93b,
+      0 0 12px #ffea3c,
+      0 0 20px #fff176,
+      0 0 30px #fff176;
+    filter: drop-shadow(0 0 4px #ffd93b);
+  }
+
+  .message.visible {
+    opacity: 1;
+    animation: floatUp 3s ease forwards;
+  }
+
+  @keyframes floatUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(-30px);
+    }
+  }
+
+  button {
+    margin-top: 40px;
+    padding: 12px 32px;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background: #4a8cff;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(74, 140, 255, 0.6);
+    transition: background 0.3s;
+  }
+  button:hover:not(:disabled) {
+    background: #82b3ff;
+  }
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="lid" id="lid"></div>
+  <div class="message" id="message">Elvinimmm seni çok seviyorum balım</div>
+</div>
+
+<button id="openBtn">Kutuyu Aç</button>
+
+<script>
+  const lid = document.getElementById('lid');
+  const message = document.getElementById('message');
+  const btn = document.getElementById('openBtn');
+
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    lid.classList.add('open');
+
+    // Mesajı göster
+    setTimeout(() => {
+      message.classList.add('visible');
+      confetti();
+    }, 1200);
+
+  });
+
+  // Gelişmiş konfeti
+  function confetti() {
+    const duration = 6000;
+    const end = Date.now() + duration;
+    const colors = ['#ff0', '#f0f', '#0ff', '#0f0', '#f00', '#ffa500', '#00ffff'];
+
+    (function frame() {
+      const timeLeft = end - Date.now();
+      if (timeLeft <= 0) return;
+
+      // Konfeti parçacığı sayısını süreye göre ayarla (çokça)
+      const count = 30;
+
+      for (let i = 0; i < count; i++) {
+        const confettiEl = document.createElement('div');
+        confettiEl.style.position = 'fixed';
+        confettiEl.style.width = '10px';
+        confettiEl.style.height = '10px';
+        confettiEl.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confettiEl.style.top = window.innerHeight + 'px';
+        confettiEl.style.left = Math.random() * window.innerWidth + 'px';
+        confettiEl.style.borderRadius = '50%';
+        confettiEl.style.opacity = '1';
+        confettiEl.style.pointerEvents = 'none';
+        confettiEl.style.zIndex = 9999;
+        confettiEl.style.filter = 'drop-shadow(0 0 5px ' + confettiEl.style.backgroundColor + ')';
+
+        document.body.appendChild(confettiEl);
+
+        // Animasyon süresi ve yöne küçük rasgelelikler
+        const durationAnim = 3000 + Math.random() * 3000;
+        const rotation = Math.random() * 360;
+
+        confettiEl.animate([
+          { transform: `translateY(0px) rotate(0deg)`, opacity: 1 },
+          { transform: `translateY(-${window.innerHeight + 200}px) rotate(${rotation}deg)`, opacity: 0 }
+        ], {
+          duration: durationAnim,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          fill: 'forwards'
+        });
+
+        // Otomatik kaldırma
+        setTimeout(() => confettiEl.remove(), durationAnim);
+      }
+
+      requestAnimationFrame(frame);
+    })();
+  }
+</script>
+
+</body>
+</html>
